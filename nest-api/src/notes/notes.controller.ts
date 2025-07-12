@@ -7,15 +7,16 @@ import {
   Redirect,
   Render,
 } from '@nestjs/common';
-import { UUID } from 'crypto';
+import { Note } from './notes.entity'
 
 @Controller('notes')
 export class NotesController {
   //MARK: GET /notes
   @Get()
   @Render('index')
-  getAllNotes() {
-    return;
+  getAllNotes() : {notes : Note[]}{
+    const notes : Note[] = []; //This is a placeholder while i dont implement
+    return {notes};
   }
 
   //MARK: GET /newNote
@@ -27,15 +28,16 @@ export class NotesController {
 
   //MARK: GET /:noteId
   @Get(':id')
-  @Render(':id')
-  getNotebyId(@Param('id') id: UUID) {
-    return;
+  @Render('note')
+  getNotebyId(@Param('id') noteId: string) : {note : Note}{
+    const note : Note = {id: noteId, content: "Dummy data", date: new Date()} ;
+    return { note };
   }
 
   //MARK: POST /newNote
   @Post('newNote')
   @Redirect('/')
-  createNote(@Body() body: { content: string }) {
-    return;
+  createNote(@Body() body: { content: string}) {
+    return body;
   }
 }
