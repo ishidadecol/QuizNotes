@@ -8,6 +8,7 @@ import {
   Render,
 } from '@nestjs/common';
 import { Note } from './notes.entity'
+import { response } from 'express';
 
 @Controller('notes')
 export class NotesController {
@@ -23,16 +24,33 @@ export class NotesController {
   @Get('newNote')
   @Render('newNote')
   showCreateNoteForm() {
+    console.log(`Response status code: ${response.statusCode}`);
     return;
   }
 
-  //MARK: GET /:noteId
-  @Get(':id')
-  @Render('note')
-  getNotebyId(@Param('id') noteId: string) : {note : Note}{
-    const note : Note = {id: noteId, content: "Dummy data", date: new Date()} ;
-    return { note };
-  }
+ //MARK: GET /:noteId
+@Get(':id')
+@Render('noteDetail')
+getNotebyId(@Param('id') noteId: string): { note: Note; questions: { question: string; answer: string }[] } {
+  const note: Note = {
+    id: noteId,
+    content: "This is some example note content that was saved earlier.",
+    date: new Date()
+  };
+
+  const questions = [
+    {
+      question: "What is the main idea of this note?",
+      answer: "The note describes how to set up Tailwind with NestJS."
+    },
+    {
+      question: "Which CSS utility framework is used?",
+      answer: "Tailwind CSS."
+    }
+  ];
+
+  return { note, questions };
+}
 
   //MARK: POST /newNote
   @Post('newNote')

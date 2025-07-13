@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>My Notes</title>
+</head>
+
+<body class="min-h-screen bg-gray-50 p-8 text-gray-900">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-semibold">My Notes</h1>
+            <a href="/notes/newNote" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
+                + Add new note
+            </a>
+        </div>
+
+        {{#if notes.length}}
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white shadow rounded">
+                <thead>
+                    <tr class="bg-gray-100 text-left text-sm font-medium text-gray-700">
+                        <th class="p-3">#</th>
+                        <th class="p-3">Content</th>
+                        <th class="p-3">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each notes}}
+                    <tr class="border-t hover:bg-gray-50">
+                        <td class="p-3">{{@index}}</td>
+                        <td class="p-3">{{this.content}}</td>
+                        <td class="p-3">{{formatDate this.date}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <p class="text-gray-600 mt-4">No notes yet — click “Add new note” to create one.</p>
+        {{/if}}
+    </div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</html>
