@@ -18,8 +18,11 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
         this.queue = this.config.get<string>('RABBITMQ_QUEUE') || 'default_queue_name'
 
         this.connection = connect(url);
-        this.channel = await this.connection.createChannel();
-        await this.channel.assertQueue(this.queue, { durable: true });
+        this.channel = await this.connection.createChannel({
+            setup: async (channel) => {
+                await channel.assertQueue(this.queue, {durable:true})
+            }
+        });
 
         console.log(`RABBITMQ CONNECTED SUCCESFULLY - queue: ${this.queue}`);
     }
@@ -38,7 +41,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
             content: note.content,
         }));
 
-        this.channel.sendToQueue(this.queue, message, { persistent: true });
+        await this.channel.sendToQueue(this.queue, message, { persistent: true });
         console.log('NOTE PUBLISHED TO QUEUE:', this.queue);
     }
 
