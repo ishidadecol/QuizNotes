@@ -15,7 +15,7 @@ async function bootstrap() {
 
   hbs.registerHelper('formatDate', function (date: Date) {
     if (!date) return '';
-    return new Date(date).toLocaleDateString(); // you can customize the format if needed
+    return new Date(date).toLocaleDateString(); 
   });
 }
 void bootstrap();
