@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
   Param,
   Post,
   Redirect,
@@ -10,17 +11,23 @@ import {
 import { Note } from './notes.entity'
 import { response } from 'express';
 import { RabbitMQService } from 'src/rabbitmq/rabbitmq.service';
+import { DataSource } from 'typeorm';
 
 @Controller('notes')
 export class NotesController {
-  constructor(private rmqService: RabbitMQService) { }
+  constructor(private rmqService: RabbitMQService, private db: DataSource) { }
+
   //MARK: GET /notes
   @Get()
   @Render('index')
-  getAllNotes(): { notes: Note[] } {
-    //TODO: Get all notes from DB
-    const notes: Note[] = []; //This is a placeholder while i dont implement
-    return { notes };
+  async getAllNotes(): Promise<{ notes: Note[]; }> {
+    try {
+      const notes = await this.db.manager.query('SELECT * FROM note')
+      return notes
+    } catch (error) {
+      console.log("DEBUG: FAILED TO FETCH NOTES -> ", error)
+      throw new InternalServerErrorException('Unexpected error');
+    }
   }
 
   //MARK: GET /newNote
@@ -34,16 +41,16 @@ export class NotesController {
   //MARK: GET /:noteId
   @Get(':id')
   @Render('noteDetail')
-  getNotebyId(@Param('id') noteId: string): { note : Note | undefined } {
+  getNotebyId(@Param('id') noteId: string): { note: Note | undefined } {
     //TODO: Get note by id from DB
-    return {note: undefined};
+    return { note: undefined };
   }
 
   //MARK: POST /newNote
   @Post('newNote')
   @Redirect('/notes')
   async createNote(@Body() body: { content: string }) {
-    
+
     //TODO: SAVE NOTE ON DB
 
 
