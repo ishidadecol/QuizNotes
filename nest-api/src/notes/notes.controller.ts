@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
+  NotFoundException,
   Param,
   Post,
   Redirect,
@@ -41,9 +42,17 @@ export class NotesController {
   //MARK: GET /:noteId
   @Get(':id')
   @Render('noteDetail')
-  getNotebyId(@Param('id') noteId: string): { note: Note | undefined } {
-    //TODO: Get note by id from DB
-    return { note: undefined };
+  async getNotebyId(@Param('id') noteId: string): Promise<{ note: Note; }> {
+    try {
+      const notes = (await this.db.manager.findBy(Note, { id: noteId }))
+      if (notes.length == 0) {
+        throw new NotFoundException('There is no note with this id')
+      }
+      return { note: notes[0] }
+    } catch (error) {
+      console.log("DEBUG: FAILED TO FETCH NOTES -> ", error)
+      throw new InternalServerErrorException('Unexpected error');
+    }
   }
 
   //MARK: POST /newNote
