@@ -5,15 +5,8 @@ dotenv.config();
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url : process.env.DB_URL,
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/database/migrations/*.{ts,js}'],
+  entities: ['dist/**/*.entity.js'],
+  migrations: ['dist/database/migrations/.js'],
   synchronize: false,
 });
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log("Data Source has been initialized!")
-  })
-  .catch((err) => {
-    console.error("Error during Data Source initialization", err)
-  })

@@ -11,20 +11,20 @@ import {
 } from '@nestjs/common';
 import { Note } from './notes.entity'
 import { response } from 'express';
-import { RabbitMQService } from 'src/rabbitmq/rabbitmq.service';
-import { DataSource } from 'typeorm';
+import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
+import { AppDataSource } from '../database/data-source';
 
 @Controller('notes')
 export class NotesController {
-  constructor(private rmqService: RabbitMQService, private db: DataSource) { }
+  constructor(private rmqService: RabbitMQService) { }
 
   //MARK: GET /notes
   @Get()
   @Render('index')
   async getAllNotes(): Promise<{ notes: Note[]; }> {
     try {
-      const notes = await this.db.manager.query('SELECT * FROM note')
-      return notes
+      const notes = await AppDataSource.query('SELECT * FROM note')
+      return {notes}
     } catch (error) {
       console.log("DEBUG: FAILED TO FETCH NOTES -> ", error)
       throw new InternalServerErrorException('Unexpected error');
@@ -44,7 +44,7 @@ export class NotesController {
   @Render('noteDetail')
   async getNotebyId(@Param('id') noteId: string): Promise<{ note: Note; }> {
     try {
-      const notes = (await this.db.manager.findBy(Note, { id: noteId }))
+      const notes = (await AppDataSource.manager.findBy(Note, { id: noteId }))
       if (notes.length == 0) {
         throw new NotFoundException('There is no note with this id')
       }
@@ -59,11 +59,20 @@ export class NotesController {
   @Post('newNote')
   @Redirect('/notes')
   async createNote(@Body() body: { content: string }) {
+    try {
+      const newNote = AppDataSource.manager.create(Note, {
+        content: body.content,
+        date: new Date(),
+      });
 
-    //TODO: SAVE NOTE ON DB
+      await AppDataSource.manager.save(Note, newNote);
 
+      await this.rmqService.publishNote(newNote);
 
-    // await this.rmqService.publishNote(newNote);
-    return body;
+      return {}; // redireciona para /notes
+    } catch (error) {
+      console.error('Failed to create note:', error);
+      throw new InternalServerErrorException('Could not create the note.');
+    }
   }
 }

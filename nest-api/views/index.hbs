@@ -28,10 +28,22 @@
                 </thead>
                 <tbody>
                     {{#each notes}}
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="p-3">{{@index}}</td>
-                        <td class="p-3">{{this.content}}</td>
-                        <td class="p-3">{{formatDate this.date}}</td>
+                    <tr class="border-t hover:bg-gray-50 cursor-pointer">
+                        <td class="p-3">
+                            <a href="/notes/{{this.id}}" class="block w-full h-full">
+                                {{@index}}
+                            </a>
+                        </td>
+                        <td class="p-3">
+                            <a href="/notes/{{this.id}}" class="block w-full h-full">
+                                {{this.content}}
+                            </a>
+                        </td>
+                        <td class="p-3">
+                            <a href="/notes/{{this.id}}" class="block w-full h-full">
+                                {{formatDate this.date}}
+                            </a>
+                        </td>
                     </tr>
                     {{/each}}
                 </tbody>
