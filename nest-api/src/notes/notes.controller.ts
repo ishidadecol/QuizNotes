@@ -18,6 +18,7 @@ export class NotesController {
   @Get()
   @Render('index')
   getAllNotes(): { notes: Note[] } {
+    //TODO: Get all notes from DB
     const notes: Note[] = []; //This is a placeholder while i dont implement
     return { notes };
   }
@@ -33,25 +34,9 @@ export class NotesController {
   //MARK: GET /:noteId
   @Get(':id')
   @Render('noteDetail')
-  getNotebyId(@Param('id') noteId: string): { note: Note; questions: { question: string; answer: string }[] } {
-    const note: Note = {
-      id: noteId,
-      content: "This is some example note content that was saved earlier.",
-      date: new Date()
-    };
-
-    const questions = [
-      {
-        question: "What is the main idea of this note?",
-        answer: "The note describes how to set up Tailwind with NestJS."
-      },
-      {
-        question: "Which CSS utility framework is used?",
-        answer: "Tailwind CSS."
-      }
-    ];
-
-    return { note, questions };
+  getNotebyId(@Param('id') noteId: string): { note : Note | undefined } {
+    //TODO: Get note by id from DB
+    return {note: undefined};
   }
 
   //MARK: POST /newNote
@@ -60,13 +45,9 @@ export class NotesController {
   async createNote(@Body() body: { content: string }) {
     
     //TODO: SAVE NOTE ON DB
-    const newNote: Note = {
-      id: "placeholderId",
-      content: body.content,
-      date: new Date()
-    }
 
-    await this.rmqService.publishNote(newNote);
+
+    // await this.rmqService.publishNote(newNote);
     return body;
   }
 }
